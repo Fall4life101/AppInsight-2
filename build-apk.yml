@@ -1,0 +1,33 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - main  # Or the branch you want to trigger the build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # You can use macOS or Windows if needed
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Adjust based on your Node.js version
+
+      - name: Install dependencies
+        run: npm install  # Install the dependencies specified in package.json
+
+      - name: Build Web Assets
+        run: npm run build  # Build the web app assets (if using Capacitor with a frontend)
+
+      - name: Sync with Capacitor Android
+        run: npx cap sync android  # Sync Capacitor plugins and Android platform
+
+      - name: Build APK
+        run: |
+          cd android
+          ./gradlew assembleDebug  # This will build a debug APK (for testing)
