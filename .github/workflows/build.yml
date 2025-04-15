@@ -1,0 +1,36 @@
+name: Build APK for AppInsight
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # This sets the environment to use Ubuntu (can also use macOS or Windows)
+
+    steps:
+    - name: Check out code from repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'  # Set the version of Node.js (you can change the version if needed)
+
+    - name: Install dependencies
+      run: |
+        npm install  # Install the dependencies listed in your package.json file
+
+    - name: Build web assets
+      run: |
+        npm run build  # Assuming your project has a build script defined in package.json
+
+    - name: Sync Capacitor with Android
+      run: |
+        npx cap sync android  # Sync your project with the Android platform
+
+    - name: Build APK
+      run: |
+        cd android  # Navigate to the Android project directory
+        ./gradlew assembleRelease  # This command will build the APK for release
