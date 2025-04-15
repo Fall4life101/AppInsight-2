@@ -1,0 +1,27 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - main  # Trigger build on pushing to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+      - name: Set up Android SDK
+        run: |
+          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -P $HOME
+          unzip $HOME/commandlinetools-linux-7583922_latest.zip -d $HOME/cmdline-tools
+          yes | $HOME/cmdline-tools/bin/sdkmanager --licenses
+          $HOME/cmdline-tools/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3"
+      - name: Build APK
+        run: |
+          cd android
+          ./gradlew assembleRelease  # Or assembleDebug for debug APK
